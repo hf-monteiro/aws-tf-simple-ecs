@@ -11,12 +11,12 @@ resource "aws_s3_bucket_acl" "Example-service01-bucket-acl" {
 //****END SERVICE01 BUCKET
 //****START  SERVICE02 BUCKET****
 resource "aws_s3_bucket" "Example-service02-bucket" {
-    bucket = "Example-bucket02"
+  bucket = "Example-bucket02"
 }
 
 resource "aws_s3_bucket_acl" "Example-service02-bucket-acl" {
-    bucket = aws_s3_bucket.Example-service02-bucket.id
-    acl = "private"
+  bucket = aws_s3_bucket.Example-service02-bucket.id
+  acl    = "private"
 }
 //****END SERVICE02 BUCKET
 //****START SERVICE03 BUCKET****
