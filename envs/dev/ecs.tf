@@ -32,7 +32,7 @@ resource "aws_iam_policy" "ecs-task-execution-addons" {
   name        = "ecs-task-execution-addons"
   path        = "/"
   description = "Grants permissions needed for launcing ECS tasks not provided by builtin AWS policy"
-  policy      = "${file("policy-docs/task-execution-addons.json")}"
+  policy      = file("policy-docs/task-execution-addons.json")
 }
 resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
   role       = aws_iam_role.ecs-task-execution-role.name
@@ -47,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-addons-attach
 //****START ECS CONFIGURATION FOR EACH SPECIFIC SERVICE****
 //****START SERVICE01****
 resource "aws_iam_role" "Example-service01-dev-task-role" {
-    name = "Example-service01-task-role"
+  name = "Example-service01-task-role"
 
   assume_role_policy = <<-EOF
         {
@@ -173,9 +173,9 @@ resource "aws_ecs_service" "Example-service01-dev" {
 //****END SERVICE01****
 //****START SERVICE02****
 resource "aws_iam_role" "Example-service02-dev-task-role" {
-    name = "Example-service02-task-role"
+  name = "Example-service02-task-role"
 
-    assume_role_policy = <<-EOF
+  assume_role_policy = <<-EOF
         {
             "Version": "2012-10-17",
             "Statement": [
@@ -192,103 +192,103 @@ resource "aws_iam_role" "Example-service02-dev-task-role" {
         EOF
 }
 resource "aws_iam_policy" "Example-service02-dev-task-policy" {
-    name = "Example-service02-dev-task-policy"
-    path = "/"
-    description = "Grants permissions needed by the Example Service tasks/service"
-    policy = templatefile("policy-docs/Example-service02-dev-task-policy.tftpl", {queueARN = aws_sqs_queue.service02-dev.arn})
+  name        = "Example-service02-dev-task-policy"
+  path        = "/"
+  description = "Grants permissions needed by the Example Service tasks/service"
+  policy      = templatefile("policy-docs/Example-service02-dev-task-policy.tftpl", { queueARN = aws_sqs_queue.service02-dev.arn })
 }
 
 resource "aws_iam_role_policy_attachment" "Example-service02-dev-task-policy-attachment" {
-    role = aws_iam_role.Example-service02-dev-task-role.name
-    policy_arn = aws_iam_policy.Example-service02-dev-task-policy.arn
+  role       = aws_iam_role.Example-service02-dev-task-role.name
+  policy_arn = aws_iam_policy.Example-service02-dev-task-policy.arn
 }
 resource "aws_ecs_task_definition" "Example-service02-dev" {
-    family = "Example-service02-dev"
-    task_role_arn = aws_iam_role.Example-service02-dev-task-role.arn
-    execution_role_arn = aws_iam_role.ecs-task-execution-role.arn
-    network_mode = "awsvpc"
-    cpu = "256"
-    memory = "512"
-    requires_compatibilities = ["FARGATE"]
-    container_definitions = "${file("container-defs/service02.json")}"
+  family                   = "Example-service02-dev"
+  task_role_arn            = aws_iam_role.Example-service02-dev-task-role.arn
+  execution_role_arn       = aws_iam_role.ecs-task-execution-role.arn
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  requires_compatibilities = ["FARGATE"]
+  container_definitions    = file("container-defs/service02.json")
 }
 resource "aws_lb_target_group" "Example-service02-dev-tg" {
-    name = "Example-service02-dev"
-    port = 80
-    protocol = "HTTP"
-    target_type = "ip"
-    vpc_id = aws_vpc.Example-dev.id
+  name        = "Example-service02-dev"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.Example-dev.id
 
-    health_check {
-        enabled = true
-        path = "/health"
-    }
+  health_check {
+    enabled = true
+    path    = "/health"
+  }
 
-    depends_on = [aws_alb.Example-service02-dev-lb]
+  depends_on = [aws_alb.Example-service02-dev-lb]
 }
 
 resource "aws_alb" "Example-service02-dev-lb" {
-    name = "Example-service02-dev"
-    internal = false
-    load_balancer_type = "application"
+  name               = "Example-service02-dev"
+  internal           = false
+  load_balancer_type = "application"
 
-    subnets = [
-        aws_subnet.public-subnets["public-1a"].id,
-        aws_subnet.public-subnets["public-1b"].id,
-        aws_subnet.public-subnets["public-1c"].id
-    ]
+  subnets = [
+    aws_subnet.public-subnets["public-1a"].id,
+    aws_subnet.public-subnets["public-1b"].id,
+    aws_subnet.public-subnets["public-1c"].id
+  ]
 
-    security_groups = [aws_security_group.Example-dev-lbs.id]
+  security_groups = [aws_security_group.Example-dev-lbs.id]
 }
 //Forwarding HTTP requests to HTTPS
 resource "aws_alb_listener" "Example-service02-dev-http-listener" {
-    load_balancer_arn = aws_alb.Example-service02-dev-lb.arn
-    port = "80"
-    protocol = "HTTP"
+  load_balancer_arn = aws_alb.Example-service02-dev-lb.arn
+  port              = "80"
+  protocol          = "HTTP"
 
-    default_action {
-        type = "redirect"
-        redirect {
-            port = 443
-            protocol = "HTTPS"
-            status_code = "HTTP_301"
-        }
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
+  }
 }
 resource "aws_alb_listener" "Example-service02-dev-https-listener" {
-    load_balancer_arn = aws_alb.Example-service02-dev-lb.arn
-    port = "443"
-    protocol = "HTTPS"
-    certificate_arn = data.aws_acm_certificate.dev-cert.arn
+  load_balancer_arn = aws_alb.Example-service02-dev-lb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = data.aws_acm_certificate.dev-cert.arn
 
-    default_action {
-        type = "forward"
-        target_group_arn = aws_lb_target_group.Example-service02-dev-tg.arn
-    }
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.Example-service02-dev-tg.arn
+  }
 }
 resource "aws_ecs_service" "Example-service02-dev" {
-    name = "Example-service02-dev"
-    cluster = aws_ecs_cluster.dev-cluster.id
-    task_definition = aws_ecs_task_definition.Example-service02-dev.arn
-    desired_count = 1
-    deployment_minimum_healthy_percent = 50
-    deployment_maximum_percent = 200
-    launch_type = "FARGATE"
-    scheduling_strategy = "REPLICA"
+  name                               = "Example-service02-dev"
+  cluster                            = aws_ecs_cluster.dev-cluster.id
+  task_definition                    = aws_ecs_task_definition.Example-service02-dev.arn
+  desired_count                      = 1
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
+  launch_type                        = "FARGATE"
+  scheduling_strategy                = "REPLICA"
 
-    network_configuration {
-        security_groups = [
-            aws_security_group.Example-ecs-dev.id
-        ]
+  network_configuration {
+    security_groups = [
+      aws_security_group.Example-ecs-dev.id
+    ]
 
-        subnets = [
-            aws_subnet.private-subnets["private-1a"].id,
-            aws_subnet.private-subnets["private-1b"].id,
-            aws_subnet.private-subnets["private-1c"].id
-        ]
+    subnets = [
+      aws_subnet.private-subnets["private-1a"].id,
+      aws_subnet.private-subnets["private-1b"].id,
+      aws_subnet.private-subnets["private-1c"].id
+    ]
 
-        assign_public_ip = false
-    }
+    assign_public_ip = false
+  }
 }
 //****END SERVICE02 ###
 //****START SERVICE03****

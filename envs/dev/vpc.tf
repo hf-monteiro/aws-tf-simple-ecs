@@ -70,13 +70,15 @@ resource "aws_route_table" "private-route-table" {
 }
 
 resource "aws_route" "default-public-route" {
-  route_table_id         = aws_route_table.public-route-table.id
+  route_table_id = aws_route_table.public-route-table.id
+  # Lab/demo CIDR: restrict this to trusted networks before production use.
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.gw.id
 }
 
 resource "aws_route" "default-private-route" {
-  route_table_id         = aws_route_table.private-route-table.id
+  route_table_id = aws_route_table.private-route-table.id
+  # Lab/demo CIDR: restrict this to trusted networks before production use.
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.nat-gateway-1a.id
 }
@@ -104,27 +106,30 @@ resource "aws_security_group" "Example-dev-lbs" {
   vpc_id      = aws_vpc.Example-dev.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    # Lab/demo CIDR: restrict this to trusted networks before production use.
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group_rule" "allow-https-to-lbs" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
+  type      = "ingress"
+  from_port = 443
+  to_port   = 443
+  protocol  = "tcp"
+  # Lab/demo CIDR: restrict this to trusted networks before production use.
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.Example-dev-lbs.id
 }
 
 resource "aws_security_group_rule" "allow-http-to-lbs" {
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
+  type      = "ingress"
+  from_port = 80
+  to_port   = 80
+  protocol  = "tcp"
+  # Lab/demo CIDR: restrict this to trusted networks before production use.
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.Example-dev-lbs.id
 }
@@ -135,9 +140,10 @@ resource "aws_security_group" "Example-ecs-dev" {
   vpc_id      = aws_vpc.Example-dev.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    # Lab/demo CIDR: restrict this to trusted networks before production use.
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -156,9 +162,10 @@ resource "aws_security_group" "Example-dev-postgres" {
   vpc_id      = aws_vpc.Example-dev.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    # Lab/demo CIDR: restrict this to trusted networks before production use.
     cidr_blocks = ["0.0.0.0/0"]
   }
 }

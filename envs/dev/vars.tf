@@ -1,18 +1,18 @@
 data "aws_secretsmanager_secret" "secrets" {
-    name = "dev/Example-example"
+  name = "dev/Example-example"
 }
 data "aws_secretsmanager_secret_version" "current" {
-    secret_id = data.aws_secretsmanager_secret.secrets.id
+  secret_id = data.aws_secretsmanager_secret.secrets.id
 }
 data "aws_secretsmanager_secret" "service01" {
-    name = "dev/Example-service02"
+  name = "dev/Example-service02"
 }
 
 data "aws_secretsmanager_secret_version" "ecom-current" {
-    secret_id = data.aws_secretsmanager_secret.service01.id
+  secret_id = data.aws_secretsmanager_secret.service01.id
 }
 data "aws_acm_certificate" "dev-cert" {
-    domain = "dev.Exampleonline.com"
+  domain = "dev.Exampleonline.com"
 }
 variable "account" {
   type    = string
@@ -57,43 +57,43 @@ variable "private-subnets" {
 
 }
 
-variable broker_name {
-  default = "service03-service"  
+variable "broker_name" {
+  default = "service03-service"
 }
 
-variable engine_version {
+variable "engine_version" {
   default = "3.8.6"
 }
 
-variable engine_type {
+variable "engine_type" {
   default = "RabbitMQ"
 }
 
-variable host_instance_type {
+variable "host_instance_type" {
   default = "mq.m5.large"
 }
 
-variable username {
+variable "username" {
   default = "mymquser"
 }
 
-variable password {
+variable "password" {
   default = "mymqpassword"
 }
 
-variable deployment_mode {
+variable "deployment_mode" {
   default = "CLUSTER_MULTI_AZ"
 }
 
-variable publicly_accessible {
+variable "publicly_accessible" {
   default = true
 }
 
-variable mq_cluster_instance_count {
+variable "mq_cluster_instance_count" {
   default = "1"
 }
 
-variable storage_type {
+variable "storage_type" {
   default = "ebs"
 }
 
